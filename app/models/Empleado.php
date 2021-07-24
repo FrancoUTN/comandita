@@ -12,9 +12,10 @@ class Empleado extends Model
     protected $primaryKey = 'id';
     protected $table = 'empleados';
     public $incrementing = true;
-    public $timestamps = false;
+    // public $timestamps = false;
 
     const CREATED_AT = 'fechaAlta';
+    const UPDATED_AT = NULL; // Si no, rompe
     const DELETED_AT = 'fechaBaja';
 
     protected $fillable = [

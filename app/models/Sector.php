@@ -5,18 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Mesa extends Model
+class Sector extends Model
 {
     use SoftDeletes;
 
     protected $primaryKey = 'id';
-    protected $table = 'mesas';
+    protected $table = 'sectores';
     public $incrementing = true;
     public $timestamps = false;
-
-    const DELETED_AT = 'fechaBaja';
-
+    
     protected $fillable = [
-        'codigo', 'estado', 'usos', 'foto', 'fechaBaja'
+        'id', 'nombre', 'tipo_empleado'
     ];
 }

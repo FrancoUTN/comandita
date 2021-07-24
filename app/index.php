@@ -1,4 +1,8 @@
 <?php
+
+date_default_timezone_set('America/Argentina/Buenos_Aires'); // fechaAlta correcta
+
+use App\Models\Empleado;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Factory\AppFactory;
@@ -8,7 +12,14 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-require_once './controllers/EjemploController.php';
+require_once './controllers/EmpleadoController.php';
+require_once './controllers/SocioController.php';
+require_once './controllers/ClienteController.php';
+require_once './controllers/ProductoController.php';
+require_once './controllers/MesaController.php';
+require_once './controllers/PedidoController.php';
+require_once './controllers/SectorController.php';
+require_once './controllers/FacturaController.php';
 
 // Load ENV
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -41,7 +52,74 @@ $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
 // Routes
+$app->get('[/]', function (Request $request, Response $response) {    
+    $response->getBody()->write("La Comanda");
+    return $response;
+});
 
+$app->group('/empleados', function (RouteCollectorProxy $group) {
+    $group->get('/{id}', \EmpleadoController::class . ':TraerUno');
+    $group->get('[/]', \EmpleadoController::class . ':TraerTodos');
+    $group->post('[/]', \EmpleadoController::class . ':CargarUno');
+    $group->delete('/{id}', \EmpleadoController::class . ':BorrarUno');
+    $group->put('/{id}', \EmpleadoController::class . ':ModificarUno');
+});
+
+$app->group('/socios', function (RouteCollectorProxy $group) {
+    $group->get('/{id}', \SocioController::class . ':TraerUno');
+    $group->get('[/]', \SocioController::class . ':TraerTodos');
+    $group->post('[/]', \SocioController::class . ':CargarUno');
+    $group->delete('/{id}', \SocioController::class . ':BorrarUno');
+    $group->put('/{id}', \SocioController::class . ':ModificarUno');
+});
+
+$app->group('/clientes', function (RouteCollectorProxy $group) {
+    $group->get('/{id}', \ClienteController::class . ':TraerUno');
+    $group->get('[/]', \ClienteController::class . ':TraerTodos');
+    $group->post('[/]', \ClienteController::class . ':CargarUno');
+    $group->delete('/{id}', \ClienteController::class . ':BorrarUno');
+    $group->put('/{id}', \ClienteController::class . ':ModificarUno');
+});
+
+$app->group('/productos', function (RouteCollectorProxy $group) {
+    $group->get('/{id}', \ProductoController::class . ':TraerUno');
+    $group->get('[/]', \ProductoController::class . ':TraerTodos');
+    $group->post('[/]', \ProductoController::class . ':CargarUno');
+    $group->delete('/{id}', \ProductoController::class . ':BorrarUno');
+    $group->put('/{id}', \ProductoController::class . ':ModificarUno');
+});
+
+$app->group('/mesas', function (RouteCollectorProxy $group) {
+    $group->get('/{id}', \MesaController::class . ':TraerUno');
+    $group->get('[/]', \MesaController::class . ':TraerTodos');
+    $group->post('[/]', \MesaController::class . ':CargarUno');
+    $group->delete('/{id}', \MesaController::class . ':BorrarUno');
+    $group->put('/{id}', \MesaController::class . ':ModificarUno');
+});
+
+$app->group('/pedidos', function (RouteCollectorProxy $group) {
+    $group->get('/{id}', \PedidoController::class . ':TraerUno');
+    $group->get('[/]', \PedidoController::class . ':TraerTodos');
+    $group->post('[/]', \PedidoController::class . ':CargarUno');
+    $group->delete('/{id}', \PedidoController::class . ':BorrarUno');
+    $group->put('/{id}', \PedidoController::class . ':ModificarUno');
+});
+
+$app->group('/sectores', function (RouteCollectorProxy $group) {
+    $group->get('/{id}', \SectorController::class . ':TraerUno');
+    $group->get('[/]', \SectorController::class . ':TraerTodos');
+    $group->post('[/]', \SectorController::class . ':CargarUno');
+    $group->delete('/{id}', \SectorController::class . ':BorrarUno');
+    $group->put('/{id}', \SectorController::class . ':ModificarUno');
+});
+
+$app->group('/facturas', function (RouteCollectorProxy $group) {
+    $group->get('/{id}', \FacturaController::class . ':TraerUno');
+    $group->get('[/]', \FacturaController::class . ':TraerTodos');
+    $group->post('[/]', \FacturaController::class . ':CargarUno');
+    $group->delete('/{id}', \FacturaController::class . ':BorrarUno');
+    $group->put('/{id}', \FacturaController::class . ':ModificarUno');
+});
 
 
 // Run app

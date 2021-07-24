@@ -12,9 +12,10 @@ class Socio extends Model
     protected $primaryKey = 'id';
     protected $table = 'socios';
     public $incrementing = true;
-    public $timestamps = false;
+    // public $timestamps = false;
 
     const CREATED_AT = 'fechaAlta';
+    const UPDATED_AT = NULL;
     const DELETED_AT = 'fechaBaja';
 
     protected $fillable = [
