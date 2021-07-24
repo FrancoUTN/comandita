@@ -5,19 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Empleado extends Model
+class Pedido extends Model
 {
     use SoftDeletes;
 
     protected $primaryKey = 'id';
-    protected $table = 'empleados'; // tabla
+    protected $table = 'pedidos';
     public $incrementing = true;
     public $timestamps = false;
 
-    const CREATED_AT = 'fechaAlta';
-    const DELETED_AT = 'fechaBaja';
-
     protected $fillable = [
-        
-    ]; // columnas
+        'codigo', 'id_producto', 'codigo_mesa', 'cantidad', 'estado', 'hora_inicio', 'hora_estimada', 'hora_entrega'
+    ];
 }
