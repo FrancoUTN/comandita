@@ -10,9 +10,9 @@ class ClienteController implements IApiUsable
     {
         $id = $args['id'];
     
-        $venta = Cliente::find($id);
+        $objeto = Cliente::find($id);
     
-        $payload = json_encode($venta);
+        $payload = json_encode($objeto);
     
         $response->getBody()->write($payload);
     

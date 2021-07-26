@@ -18,8 +18,8 @@ require_once './controllers/ClienteController.php';
 require_once './controllers/ProductoController.php';
 require_once './controllers/MesaController.php';
 require_once './controllers/PedidoController.php';
-require_once './controllers/SectorController.php';
-require_once './controllers/FacturaController.php';
+// require_once './controllers/SectorController.php';
+// require_once './controllers/FacturaController.php';
 
 // Load ENV
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -105,21 +105,21 @@ $app->group('/pedidos', function (RouteCollectorProxy $group) {
     $group->put('/{id}', \PedidoController::class . ':ModificarUno');
 });
 
-$app->group('/sectores', function (RouteCollectorProxy $group) {
-    $group->get('/{id}', \SectorController::class . ':TraerUno');
-    $group->get('[/]', \SectorController::class . ':TraerTodos');
-    $group->post('[/]', \SectorController::class . ':CargarUno');
-    $group->delete('/{id}', \SectorController::class . ':BorrarUno');
-    $group->put('/{id}', \SectorController::class . ':ModificarUno');
-});
+// $app->group('/sectores', function (RouteCollectorProxy $group) {
+//     $group->get('/{id}', \SectorController::class . ':TraerUno');
+//     $group->get('[/]', \SectorController::class . ':TraerTodos');
+//     $group->post('[/]', \SectorController::class . ':CargarUno');
+//     $group->delete('/{id}', \SectorController::class . ':BorrarUno');
+//     $group->put('/{id}', \SectorController::class . ':ModificarUno');
+// });
 
-$app->group('/facturas', function (RouteCollectorProxy $group) {
-    $group->get('/{id}', \FacturaController::class . ':TraerUno');
-    $group->get('[/]', \FacturaController::class . ':TraerTodos');
-    $group->post('[/]', \FacturaController::class . ':CargarUno');
-    $group->delete('/{id}', \FacturaController::class . ':BorrarUno');
-    $group->put('/{id}', \FacturaController::class . ':ModificarUno');
-});
+// $app->group('/facturas', function (RouteCollectorProxy $group) {
+//     $group->get('/{id}', \FacturaController::class . ':TraerUno');
+//     $group->get('[/]', \FacturaController::class . ':TraerTodos');
+//     $group->post('[/]', \FacturaController::class . ':CargarUno');
+//     $group->delete('/{id}', \FacturaController::class . ':BorrarUno');
+//     $group->put('/{id}', \FacturaController::class . ':ModificarUno');
+// });
 
 
 // Run app

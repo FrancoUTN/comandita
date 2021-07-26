@@ -10,9 +10,9 @@ class MesaController implements IApiUsable
     {
         $id = $args['id'];
     
-        $venta = Mesa::find($id);
+        $objeto = Mesa::find($id);
     
-        $payload = json_encode($venta);
+        $payload = json_encode($objeto);
     
         $response->getBody()->write($payload);
     
@@ -34,15 +34,13 @@ class MesaController implements IApiUsable
     {
         $parametros = $request->getParsedBody();
         
-        if (isset($parametros['codigo']) &&
-            isset($parametros['estado']) &&
-            isset($parametros['usos']))
+        if (isset($parametros['codigo']) && isset($parametros['id_estado']))
         {
             $objeto = new Mesa();
     
             $objeto->codigo = $parametros['codigo'];
-            $objeto->estado = $parametros['estado'];
-            $objeto->usos = $parametros['usos'];
+            $objeto->id_estado = $parametros['id_estado'];
+            $objeto->usos = 0; // Empieza sin usos
     
 
             // FOTO OPCIONAL

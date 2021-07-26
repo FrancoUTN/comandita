@@ -10,9 +10,9 @@ class SocioController implements IApiUsable
     {
         $id = $args['id'];
     
-        $venta = Socio::find($id);
+        $objeto = Socio::find($id);
     
-        $payload = json_encode($venta);
+        $payload = json_encode($objeto);
     
         $response->getBody()->write($payload);
     

@@ -1,18 +1,18 @@
 <?php
-require_once './models/Producto.php';
+require_once './models/Mesa.php';
 require_once './interfaces/IApiUsable.php';
 
-use \App\Models\Producto as Producto;
+use \App\Models\Mesa as Mesa;
 
-class ProductoController implements IApiUsable
+class MesaController implements IApiUsable
 {
 	public function TraerUno($request, $response, $args)
     {
         $id = $args['id'];
     
-        $venta = Producto::find($id);
+        $objeto = Mesa::find($id);
     
-        $payload = json_encode($venta);
+        $payload = json_encode($objeto);
     
         $response->getBody()->write($payload);
     
@@ -21,7 +21,7 @@ class ProductoController implements IApiUsable
 
 	public function TraerTodos($request, $response, $args)
     {
-        $lista = Producto::all();
+        $lista = Mesa::all();
     
         $payload = json_encode($lista);
     
@@ -32,30 +32,35 @@ class ProductoController implements IApiUsable
 
 	public function CargarUno($request, $response, $args)
     {
-        // Parámetros
         $parametros = $request->getParsedBody();
-    
-        $nombre = $parametros['nombre'];
-        $id_sector = $parametros['id_sector'];
-        $precio = $parametros['precio'];
-        $demora = $parametros['demora'];
-
-        // Creación
-        $objeto = new Producto();
-
-        $objeto->nombre = $nombre;
-        $objeto->id_sector = $id_sector;
-        $objeto->precio = $precio;
-        $objeto->demora = $demora;
-
-        try {
-            $objeto->save();
-
-            $payload = json_encode(array("mensaje" => "Alta exitosa."));
-        }
-        catch (Exception $e)
+        
+        if (isset($parametros['codigo']) &&
+            isset($parametros['estado']) &&
+            isset($parametros['usos']))
         {
-            $payload = json_encode($e);
+            $objeto = new Mesa();
+    
+            $objeto->codigo = $parametros['codigo'];
+            $objeto->estado = $parametros['estado'];
+            $objeto->usos = $parametros['usos'];
+    
+
+            // FOTO OPCIONAL
+
+
+            try {
+                $objeto->save();
+    
+                $payload = json_encode(array("mensaje" => "Alta exitosa."));
+            }
+            catch (Exception $e)
+            {
+                $payload = json_encode($e);
+            }
+        }
+        else
+        {
+            $payload = json_encode(array("mensaje" => "Datos insuficientes."));
         }
 
         // Respuesta
@@ -68,7 +73,7 @@ class ProductoController implements IApiUsable
     {
         $id = $args['id'];
     
-        $objeto = Producto::find($id);
+        $objeto = Mesa::find($id);
     
         $objeto->delete();
     
@@ -83,7 +88,7 @@ class ProductoController implements IApiUsable
     {
         $id = $args['id'];
 
-        $objeto = Producto::find($id);
+        $objeto = Mesa::find($id);
 
         if ($objeto == null)
         {
@@ -93,17 +98,17 @@ class ProductoController implements IApiUsable
         {
             $parametros = $request->getParsedBody();
         
-            if (isset($parametros['nombre']))
-                $objeto->nombre = $parametros['nombre'];
+            if (isset($parametros['codigo']))
+                $objeto->codigo = $parametros['codigo'];
             
-            if (isset($parametros['id_sector']))
-                $objeto->id_sector = $parametros['id_sector'];
+            if (isset($parametros['estado']))
+                $objeto->estado = $parametros['estado'];
 
-            if (isset($parametros['precio']))
-                $objeto->precio = $parametros['precio'];
+            if (isset($parametros['usos']))
+                $objeto->usos = $parametros['usos'];
 
-            if (isset($parametros['demora']))
-                $objeto->demora = $parametros['demora'];
+            if (isset($parametros['foto']))
+                $objeto->foto = $parametros['foto']; // HACER BACKUP
 
             try {
                 $objeto->save();

@@ -10,9 +10,9 @@ class EmpleadoController implements IApiUsable
     {
         $id = $args['id'];
     
-        $venta = Empleado::find($id);
+        $objeto = Empleado::find($id);
     
-        $payload = json_encode($venta);
+        $payload = json_encode($objeto);
     
         $response->getBody()->write($payload);
     
