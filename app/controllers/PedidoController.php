@@ -5,15 +5,14 @@ require_once './interfaces/IApiUsable.php';
 
 use \App\Models\Pedido;
 use \App\Models\Mesa;
-use Illuminate\Support\Facades\App;
 
 class PedidoController implements IApiUsable
 {
 	public function TraerUno($request, $response, $args)
     {
-        $id = $args['id'];
+        $codigo = $args['codigo'];
     
-        $objeto = Pedido::find($id);
+        $objeto = Pedido::where("codigo", $codigo)->first();;
     
         $payload = json_encode($objeto);
     
@@ -21,6 +20,19 @@ class PedidoController implements IApiUsable
     
         return $response->withHeader('Content-Type', 'application/json');
     }
+
+	// public function TraerPorID($request, $response, $args)
+    // {
+    //     $id = $args['id'];
+    
+    //     $objeto = Pedido::find($id);
+    
+    //     $payload = json_encode($objeto);
+    
+    //     $response->getBody()->write($payload);
+    
+    //     return $response->withHeader('Content-Type', 'application/json');
+    // }
 
 	public function TraerTodos($request, $response, $args)
     {
@@ -37,9 +49,8 @@ class PedidoController implements IApiUsable
     {
         $parametros = $request->getParsedBody();
         
-        if (isset($parametros['codigo']) && isset($parametros['id_producto']) &&
-            isset($parametros['codigo_mesa']) && isset($parametros['cantidad']) &&
-            isset($parametros['id_estado']) )
+        if (isset($parametros['id_producto']) &&
+            isset($parametros['codigo_mesa']) && isset($parametros['cantidad']) )
         {
             $mesa = Mesa::where("codigo", $parametros['codigo_mesa'])->first();
 
@@ -49,32 +60,30 @@ class PedidoController implements IApiUsable
             }
             else
             {
-
-            
-                    $mesa->id_estado = 1;
-        
-                    $mesa->save();
-
-
-
-
-
                 $objeto = new Pedido();
+
+                $used_symbols = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
+ 
+                $codigo = substr(str_shuffle($used_symbols), 0, 5);
         
-                $objeto->codigo = $parametros['codigo'];
+                // $objeto->codigo = $parametros['codigo'];
+                $objeto->codigo = $codigo;
                 $objeto->id_producto = $parametros['id_producto'];
                 $objeto->codigo_mesa = $parametros['codigo_mesa'];
                 $objeto->cantidad = $parametros['cantidad'];
-                $objeto->id_estado = $parametros['id_estado'];
-
+                $objeto->id_estado = 1; // Empieza "pendiente"
 
                 // FOTO OPCIONAL
 
+                $mesa->id_estado = 1; // "con cliente esperando pedido"
+
                 try {
-                    // $objeto->save();
+                    $objeto->save();
+                    $mesa->save();
         
-                    $payload = json_encode(array("mensaje" => "Alta exitosa."));
-                    $payload = json_encode($mesa);
+                    $data = array("mensaje" => "Alta exitosa.", "codigo" => $codigo);
+
+                    $payload = json_encode($data);
                 }
                 catch (Exception $e)
                 {
@@ -95,9 +104,9 @@ class PedidoController implements IApiUsable
 
 	public function BorrarUno($request, $response, $args)
     {
-        $id = $args['id'];
+        $codigo = $args['codigo'];
     
-        $objeto = Pedido::find($id);
+        $objeto = Pedido::where("codigo", $codigo)->first();;
     
         $objeto->delete();
     
@@ -110,9 +119,9 @@ class PedidoController implements IApiUsable
 
 	public function ModificarUno($request, $response, $args)
     {
-        $id = $args['id'];
-
-        $objeto = Pedido::find($id);
+        $codigo = $args['codigo'];
+    
+        $objeto = Pedido::where("codigo", $codigo)->first();;
 
         if ($objeto == null)
         {
@@ -121,18 +130,27 @@ class PedidoController implements IApiUsable
         else
         {
             $parametros = $request->getParsedBody();
-        
-            if (isset($parametros['codigo']))
-                $objeto->codigo = $parametros['codigo'];
-            
-            if (isset($parametros['estado']))
-                $objeto->estado = $parametros['estado'];
 
-            if (isset($parametros['usos']))
-                $objeto->usos = $parametros['usos'];
+            if (isset($parametros['id_estado']))
+            {
+                $id_estado = $parametros['id_estado'];
 
-            if (isset($parametros['foto']))
-                $objeto->foto = $parametros['foto']; // HACER BACKUP
+                $objeto->id_estado = $id_estado;
+
+                if ($id_estado == 2)
+                {
+                    $objeto->hora_inicio = date('Y-m-d H:i:s');
+
+                    if (isset($parametros['tiempo_estimado']))
+                    {
+                        $objeto->hora_estimada = date('Y-m-d H:i:s', time() + $parametros['tiempo_estimado']);
+                    }
+                    else
+                    {
+                        $objeto->hora_estimada = date('Y-m-d H:i:s', time() + 30);
+                    }
+                }
+            }
 
             try {
                 $objeto->save();

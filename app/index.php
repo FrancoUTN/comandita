@@ -99,15 +99,17 @@ $app->group('/mesas', function (RouteCollectorProxy $group) {
 });
 
 $app->group('/pedidos', function (RouteCollectorProxy $group) {
-    $group->get('/{id}', \PedidoController::class . ':TraerUno');
+    $group->get('/{codigo}', \PedidoController::class . ':TraerUno');
+    // $group->get('/id/{id}', \PedidoController::class . ':TraerPorID');
     $group->get('[/]', \PedidoController::class . ':TraerTodos');
     $group->post('[/]', \PedidoController::class . ':CargarUno');
-    $group->delete('/{id}', \PedidoController::class . ':BorrarUno');
-    $group->put('/{id}', \PedidoController::class . ':ModificarUno');
+    $group->delete('/{codigo}', \PedidoController::class . ':BorrarUno');
+    $group->put('/{codigo}', \PedidoController::class . ':ModificarUno');
 });
 
 $app->group('/todos', function (RouteCollectorProxy $group) {
     $group->get('[/]', \TodoController::class . ':TraerTodos');
+    $group->get('/verpedido/{codigo_mesa}/{codigo_pedido}', \TodoController::class . ':VerPedido');
 });
 
 // $app->group('/sectores', function (RouteCollectorProxy $group) {
