@@ -99,8 +99,8 @@ class MesaController implements IApiUsable
             if (isset($parametros['codigo']))
                 $objeto->codigo = $parametros['codigo'];
             
-            if (isset($parametros['estado']))
-                $objeto->estado = $parametros['estado'];
+            if (isset($parametros['id_estado']))
+                $objeto->id_estado = $parametros['id_estado'];
 
             if (isset($parametros['usos']))
                 $objeto->usos = $parametros['usos'];

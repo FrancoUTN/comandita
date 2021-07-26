@@ -34,15 +34,17 @@ class PedidoController implements IApiUsable
     {
         $parametros = $request->getParsedBody();
         
-        if (isset($parametros['codigo']) &&
-            isset($parametros['estado']) &&
-            isset($parametros['usos']))
+        if (isset($parametros['codigo']) && isset($parametros['id_producto']) &&
+            isset($parametros['codigo_mesa']) && isset($parametros['cantidad']) &&
+            isset($parametros['id_estado']) )
         {
             $objeto = new Pedido();
     
             $objeto->codigo = $parametros['codigo'];
-            $objeto->estado = $parametros['estado'];
-            $objeto->usos = $parametros['usos'];
+            $objeto->id_producto = $parametros['id_producto'];
+            $objeto->codigo_mesa = $parametros['codigo_mesa'];
+            $objeto->cantidad = $parametros['cantidad'];
+            $objeto->id_estado = $parametros['id_estado'];
     
 
             // FOTO OPCIONAL

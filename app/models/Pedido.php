@@ -13,8 +13,11 @@ class Pedido extends Model
     protected $table = 'pedidos';
     public $incrementing = true;
     public $timestamps = false;
+    
+    const DELETED_AT = 'fechaBaja';
 
     protected $fillable = [
-        'codigo', 'id_producto', 'codigo_mesa', 'cantidad', 'estado', 'hora_inicio', 'hora_estimada', 'hora_entrega'
+        'codigo', 'id_producto', 'codigo_mesa', 'cantidad', 'estado',
+        'hora_inicio', 'hora_estimada', 'hora_entrega', 'fechaBaja'
     ];
 }

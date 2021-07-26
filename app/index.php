@@ -20,6 +20,7 @@ require_once './controllers/MesaController.php';
 require_once './controllers/PedidoController.php';
 // require_once './controllers/SectorController.php';
 // require_once './controllers/FacturaController.php';
+require_once './controllers/TodoController.php'; // Testing
 
 // Load ENV
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -103,6 +104,10 @@ $app->group('/pedidos', function (RouteCollectorProxy $group) {
     $group->post('[/]', \PedidoController::class . ':CargarUno');
     $group->delete('/{id}', \PedidoController::class . ':BorrarUno');
     $group->put('/{id}', \PedidoController::class . ':ModificarUno');
+});
+
+$app->group('/todos', function (RouteCollectorProxy $group) {
+    $group->get('[/]', \TodoController::class . ':TraerTodos');
 });
 
 // $app->group('/sectores', function (RouteCollectorProxy $group) {
