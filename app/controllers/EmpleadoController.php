@@ -2,7 +2,7 @@
 require_once './models/Empleado.php';
 require_once './interfaces/IApiUsable.php';
 
-use \App\Models\Empleado as Empleado;
+use \App\Models\Empleado;
 
 class EmpleadoController implements IApiUsable
 {

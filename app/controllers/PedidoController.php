@@ -1,8 +1,11 @@
 <?php
 require_once './models/Pedido.php';
+require_once './models/Mesa.php';
 require_once './interfaces/IApiUsable.php';
 
-use \App\Models\Pedido as Pedido;
+use \App\Models\Pedido;
+use \App\Models\Mesa;
+use Illuminate\Support\Facades\App;
 
 class PedidoController implements IApiUsable
 {
@@ -38,26 +41,45 @@ class PedidoController implements IApiUsable
             isset($parametros['codigo_mesa']) && isset($parametros['cantidad']) &&
             isset($parametros['id_estado']) )
         {
-            $objeto = new Pedido();
-    
-            $objeto->codigo = $parametros['codigo'];
-            $objeto->id_producto = $parametros['id_producto'];
-            $objeto->codigo_mesa = $parametros['codigo_mesa'];
-            $objeto->cantidad = $parametros['cantidad'];
-            $objeto->id_estado = $parametros['id_estado'];
-    
+            $mesa = Mesa::where("codigo", $parametros['codigo_mesa'])->first();
 
-            // FOTO OPCIONAL
-
-
-            try {
-                $objeto->save();
-    
-                $payload = json_encode(array("mensaje" => "Alta exitosa."));
-            }
-            catch (Exception $e)
+            if (empty($mesa))
             {
-                $payload = json_encode($e);
+                $payload = json_encode(array("mensaje" => "Mesa no encontrada."));
+            }
+            else
+            {
+
+            
+                    $mesa->id_estado = 1;
+        
+                    $mesa->save();
+
+
+
+
+
+                $objeto = new Pedido();
+        
+                $objeto->codigo = $parametros['codigo'];
+                $objeto->id_producto = $parametros['id_producto'];
+                $objeto->codigo_mesa = $parametros['codigo_mesa'];
+                $objeto->cantidad = $parametros['cantidad'];
+                $objeto->id_estado = $parametros['id_estado'];
+
+
+                // FOTO OPCIONAL
+
+                try {
+                    // $objeto->save();
+        
+                    $payload = json_encode(array("mensaje" => "Alta exitosa."));
+                    $payload = json_encode($mesa);
+                }
+                catch (Exception $e)
+                {
+                    $payload = json_encode($e);
+                }
             }
         }
         else

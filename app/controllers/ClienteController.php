@@ -2,7 +2,7 @@
 require_once './models/Cliente.php';
 require_once './interfaces/IApiUsable.php';
 
-use \App\Models\Cliente as Cliente;
+use \App\Models\Cliente;
 
 class ClienteController implements IApiUsable
 {

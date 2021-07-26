@@ -2,7 +2,7 @@
 require_once './models/Producto.php';
 require_once './interfaces/IApiUsable.php';
 
-use \App\Models\Producto as Producto;
+use \App\Models\Producto;
 
 class ProductoController implements IApiUsable
 {

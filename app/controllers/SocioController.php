@@ -2,7 +2,7 @@
 require_once './models/Socio.php';
 require_once './interfaces/IApiUsable.php';
 
-use \App\Models\Socio as Socio;
+use \App\Models\Socio;
 
 class SocioController implements IApiUsable
 {

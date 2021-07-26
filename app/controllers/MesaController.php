@@ -2,7 +2,7 @@
 require_once './models/Mesa.php';
 require_once './interfaces/IApiUsable.php';
 
-use \App\Models\Mesa as Mesa;
+use \App\Models\Mesa;
 
 class MesaController implements IApiUsable
 {
