@@ -2,7 +2,6 @@
 
 date_default_timezone_set('America/Argentina/Buenos_Aires'); // fechaAlta correcta
 
-use App\Models\Empleado;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Factory\AppFactory;
@@ -15,7 +14,7 @@ require __DIR__ . '/../vendor/autoload.php';
 // Middlewares
 require_once './middlewares/AutentificadorJWT.php';
 require_once './middlewares/Verificadora.php';
-// require_once './middlewares/Generadora.php';
+require_once './middlewares/Generadora.php';
 
 // Controllers
 require_once './controllers/EmpleadoController.php';
@@ -129,9 +128,12 @@ $app->group('/clientes', function (RouteCollectorProxy $group) {
 
 $app->group('/productos', function (RouteCollectorProxy $group) {
 
-    $group->get('/{id}', \ProductoController::class . ':TraerUno');
+    $group->get('/id/{id}', \ProductoController::class . ':TraerUno');
 
     $group->get('[/]', \ProductoController::class . ':TraerTodos');
+
+    $group->get('/pdf', \ProductoController::class . ':TraerTodos')
+        ->add(\Generadora::class . ':GenerarPdf');
 
     $group->post('[/]', \ProductoController::class . ':CargarUno')
         ->add(\Verificadora::class . ':VerificarSocio');
@@ -161,7 +163,7 @@ $app->group('/mesas', function (RouteCollectorProxy $group) {
         ->add(\Verificadora::class . ':VerificarSocio');
 
     $group->put('/pagar/{codigo}', \MesaController::class . ':Pagar')
-        ->add(\Verificadora::class . ':VerificarSocio');
+        ->add(\Verificadora::class . ':VerificarMozo');
 
     $group->put('/cerrar/{codigo}', \MesaController::class . ':Cerrar')
         ->add(\Verificadora::class . ':VerificarSocio');
@@ -173,6 +175,10 @@ $app->group('/pedidos', function (RouteCollectorProxy $group) {
         ->add(\Verificadora::class . ':VerificarSocio');
     
     $group->get('[/]', \PedidoController::class . ':TraerTodos')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->get('/pdf', \PedidoController::class . ':TraerTodos')
+        ->add(\Generadora::class . ':GenerarPdf')
         ->add(\Verificadora::class . ':VerificarSocio');
 
     $group->get('/pendientes', \PedidoController::class . ':TraerPendientes')
@@ -198,8 +204,12 @@ $app->group('/pedidos', function (RouteCollectorProxy $group) {
 });
 
 $app->group('/todos', function (RouteCollectorProxy $group) {
-    $group->get('[/]', \TodoController::class . ':TraerTodos');
+
+    $group->get('[/]', \TodoController::class . ':TraerTodos')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
     $group->get('/verpedido/{codigo_mesa}/{codigo_pedido}', \TodoController::class . ':VerPedido');
+        // ->add(\Verificadora::class . ':VerificarCliente');
 });
 
 // $app->group('/sectores', function (RouteCollectorProxy $group) {

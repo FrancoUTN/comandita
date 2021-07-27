@@ -38,13 +38,21 @@ class TodoController
         {
             $payload = json_encode(array("mensaje" => "Error: el pedido no coincide con la mesa."));
         }
+        else if ($pedido->id_estado == 1)
+        {
+            $payload = json_encode(array("mensaje" => "Su pedido aun esta pendiente."));
+        }
+        else if ($pedido->id_estado == 4)
+        {
+            $payload = json_encode(array("mensaje" => "Su pedido ya ha sido entregado!"));
+        }
         else
         {
             $hora_estimada = strtotime($pedido->hora_estimada);
 
             $resta = $hora_estimada - time();
-            
-            $payload = json_encode($resta);
+
+            $payload = json_encode(array("mensaje" => "Su pedido finalizara en " . $resta . "segundos."));
         }
 
         // Respuesta
