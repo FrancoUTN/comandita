@@ -5,5 +5,8 @@
         "firebase/php-jwt": "^4.0",
         "illuminate/database": "^8.31",
         "vlucas/phpdotenv": "^5.3"
+     },
+     "scripts": {
+         "post-install-cmd": ["php artisan clear-compiled", "chmod -R 777 public/"]
      }
  }
