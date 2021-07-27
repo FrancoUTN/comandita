@@ -67,58 +67,113 @@ $app->get('[/]', function (Request $request, Response $response) {
 
 $app->group('/empleados', function (RouteCollectorProxy $group) {
 
-    $group->get('/{id}', \EmpleadoController::class . ':TraerUno');
-    $group->get('[/]', \EmpleadoController::class . ':TraerTodos');
-    $group->post('[/]', \EmpleadoController::class . ':CargarUno');
-    $group->delete('/{id}', \EmpleadoController::class . ':BorrarUno');
-    $group->put('/{id}', \EmpleadoController::class . ':ModificarUno');
+    $group->get('/{id}', \EmpleadoController::class . ':TraerUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
 
-    $group->post('/login', \EmpleadoController::class . ':Login')->add(\Verificadora::class . ':CrearJWT');
+    $group->get('[/]', \EmpleadoController::class . ':TraerTodos')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->post('[/]', \EmpleadoController::class . ':CargarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->delete('/{id}', \EmpleadoController::class . ':BorrarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->put('/{id}', \EmpleadoController::class . ':ModificarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->post('/login', \EmpleadoController::class . ':Login')
+        ->add(\Verificadora::class . ':CrearJWT');
 });
 
 $app->group('/socios', function (RouteCollectorProxy $group) {
 
-    $group->get('/{id}', \SocioController::class . ':TraerUno');
-    $group->get('[/]', \SocioController::class . ':TraerTodos');
-    $group->post('[/]', \SocioController::class . ':CargarUno');
-    $group->delete('/{id}', \SocioController::class . ':BorrarUno');
-    $group->put('/{id}', \SocioController::class . ':ModificarUno');
+    $group->get('/{id}', \SocioController::class . ':TraerUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+        
+    $group->get('[/]', \SocioController::class . ':TraerTodos')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->post('[/]', \SocioController::class . ':CargarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->delete('/{id}', \SocioController::class . ':BorrarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->put('/{id}', \SocioController::class . ':ModificarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->post('/login', \SocioController::class . ':Login')
+        ->add(\Verificadora::class . ':CrearJWT');
 });
 
 $app->group('/clientes', function (RouteCollectorProxy $group) {
 
-    $group->get('/{id}', \ClienteController::class . ':TraerUno');
-    $group->get('[/]', \ClienteController::class . ':TraerTodos');
+    $group->get('/{id}', \ClienteController::class . ':TraerUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->get('[/]', \ClienteController::class . ':TraerTodos')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
     $group->post('[/]', \ClienteController::class . ':CargarUno');
-    $group->delete('/{id}', \ClienteController::class . ':BorrarUno');
-    $group->put('/{id}', \ClienteController::class . ':ModificarUno');
+
+    $group->delete('/{id}', \ClienteController::class . ':BorrarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->put('/{id}', \ClienteController::class . ':ModificarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->post('/login', \ClienteController::class . ':Login')
+        ->add(\Verificadora::class . ':CrearJWT');
 });
 
 $app->group('/productos', function (RouteCollectorProxy $group) {
 
     $group->get('/{id}', \ProductoController::class . ':TraerUno');
+
     $group->get('[/]', \ProductoController::class . ':TraerTodos');
-    $group->post('[/]', \ProductoController::class . ':CargarUno');
-    $group->delete('/{id}', \ProductoController::class . ':BorrarUno');
-    $group->put('/{id}', \ProductoController::class . ':ModificarUno');
+
+    $group->post('[/]', \ProductoController::class . ':CargarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->delete('/{id}', \ProductoController::class . ':BorrarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->put('/{id}', \ProductoController::class . ':ModificarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
 });
 
 $app->group('/mesas', function (RouteCollectorProxy $group) {
 
-    $group->get('/{id}', \MesaController::class . ':TraerUno');
-    $group->get('[/]', \MesaController::class . ':TraerTodos');
-    $group->post('[/]', \MesaController::class . ':CargarUno');
-    $group->delete('/{id}', \MesaController::class . ':BorrarUno');
-    $group->put('/{id}', \MesaController::class . ':ModificarUno');
-    $group->put('/pagar/{codigo}', \MesaController::class . ':Pagar');
-    $group->put('/cerrar/{codigo}', \MesaController::class . ':Cerrar');
+    $group->get('/{id}', \MesaController::class . ':TraerUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->get('[/]', \MesaController::class . ':TraerTodos')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->post('[/]', \MesaController::class . ':CargarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->delete('/{id}', \MesaController::class . ':BorrarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->put('/{id}', \MesaController::class . ':ModificarUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->put('/pagar/{codigo}', \MesaController::class . ':Pagar')
+        ->add(\Verificadora::class . ':VerificarSocio');
+
+    $group->put('/cerrar/{codigo}', \MesaController::class . ':Cerrar')
+        ->add(\Verificadora::class . ':VerificarSocio');
 });
 
 $app->group('/pedidos', function (RouteCollectorProxy $group) {
 
-    $group->get('/codigo/{codigo}', \PedidoController::class . ':TraerUno');
+    $group->get('/codigo/{codigo}', \PedidoController::class . ':TraerUno')
+        ->add(\Verificadora::class . ':VerificarSocio');
     
-    $group->get('[/]', \PedidoController::class . ':TraerTodos');
+    $group->get('[/]', \PedidoController::class . ':TraerTodos')
+        ->add(\Verificadora::class . ':VerificarSocio');
 
     $group->get('/pendientes', \PedidoController::class . ':TraerPendientes')
         ->add(\Verificadora::class . ':VerificarEmpleado');
@@ -126,9 +181,11 @@ $app->group('/pedidos', function (RouteCollectorProxy $group) {
     $group->post('[/]', \PedidoController::class . ':CargarUno')
         ->add(\Verificadora::class . ':VerificarMozo');
 
-    $group->delete('/{codigo}', \PedidoController::class . ':BorrarUno');
+    $group->delete('/{codigo}', \PedidoController::class . ':BorrarUno')
+        ->add(\Verificadora::class . ':VerificarMozo');
 
-    $group->put('/{codigo}', \PedidoController::class . ':ModificarUno');
+    $group->put('/{codigo}', \PedidoController::class . ':ModificarUno')
+        ->add(\Verificadora::class . ':VerificarMozo');
 
     $group->put('/preparar/{codigo}', \PedidoController::class . ':Preparar')
         ->add(\Verificadora::class . ':VerificarEmpleado');

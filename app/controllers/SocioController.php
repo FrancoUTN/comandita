@@ -77,6 +77,76 @@ class SocioController implements IApiUsable
 
 	public function ModificarUno($request, $response, $args)
     {
+        $id = $args['id'];
 
+        $objeto = Socio::find($id);
+
+        if ($objeto == null)
+        {
+            $payload = json_encode(array("mensaje" => "Error: No existe."));
+        }
+        else
+        {
+            $parametros = $request->getParsedBody();
+        
+            if (isset($parametros['nombre']))
+                $objeto->nombre = $parametros['nombre'];
+            
+            if (isset($parametros['clave']))
+                $objeto->clave = $parametros['clave'];
+
+            try {
+                $objeto->save();
+    
+                $payload = json_encode(array("mensaje" => "Modificacion exitosa."));
+            }
+            catch (Exception $e)
+            {
+                $payload = json_encode($e);
+            }        
+        }
+
+        $response->getBody()->write($payload);
+
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+	public function Login($request, $response, $args)
+    {
+        $parsedBody = $request->getParsedBody();
+
+        if (isset($parsedBody["nombre"]) && isset($parsedBody["clave"]))
+        {
+            $nombre = $parsedBody["nombre"];
+            $clave = $parsedBody["clave"];
+          
+            $objeto = Socio::where("nombre", $nombre)->where("clave", $clave)->first();
+
+            if ($objeto == null)
+            {
+                $data = array("mensaje" => "ERROR: Usuario o clave incorrectos.");
+                
+                $status = 403;
+            }
+            else
+            {
+                $data = array("id" => $objeto->id, "perfil" => "socio");
+
+                $status = 200;
+            }
+        }
+        else
+        {
+            $data = array("mensaje" => "ERROR: Ingrese nombre y clave.");
+
+            $status = 403;
+        }
+    
+        $payload = json_encode($data);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json')
+                        ->withStatus($status);
     }
 }

@@ -95,11 +95,14 @@ class Verificadora
             try {
                 $data = AutentificadorJWT::ObtenerData($token);
 
-                if ($data->id_sector == "5")
+                if (isset($data->id_sector))
                 {
-                    $request = $request->withAttribute("id_mozo", $data->id);
+                    if ($data->id_sector == "5")
+                    {
+                        $request = $request->withAttribute("id_mozo", $data->id);
 
-                    return $handler->handle($request);
+                        return $handler->handle($request);
+                    }
                 }
                 else
                 {
@@ -133,18 +136,99 @@ class Verificadora
             try {
                 $data = AutentificadorJWT::ObtenerData($token);
 
-                $id_sector = $data->id_sector;
-
-                if ($id_sector >= 1 && $id_sector <= 4)
+                if (isset($data->id_sector))
                 {
-                    $request = $request->withAttribute("id_empleado", $data->id);
-                    $request = $request->withAttribute("id_sector", $id_sector);
+                    $id_sector = $data->id_sector;
+
+                    if ($id_sector >= 1 && $id_sector <= 4)
+                    {
+                        $request = $request->withAttribute("id_empleado", $data->id);
+                        $request = $request->withAttribute("id_sector", $id_sector);
+
+                        return $handler->handle($request);
+                    }
+                }
+                else
+                {
+                    $payload = json_encode(array("mensaje" => "ERROR: ES un mozo."));
+                }
+            }
+            catch (Exception $e) {
+                $payload = json_encode(array("mensaje" => $e->getMessage()));
+            }           
+        }
+
+        $response->getBody()->write($payload);
+
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+    }
+
+    public function VerificarSocio (Request $request, RequestHandler $handler)
+    {
+        $response = new Response();
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if (empty($header))
+        {
+            $payload = json_encode(array("mensaje" => "ERROR: Sin token."));
+        }
+        else
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+    
+            try {
+                $data = AutentificadorJWT::ObtenerData($token);
+
+                if ($data->perfil == "socio")
+                {
+                    $request = $request->withAttribute("id_usuario", $data->id);
+                    $request = $request->withAttribute("perfil", $data->perfil);
 
                     return $handler->handle($request);
                 }
                 else
                 {
-                    $payload = json_encode(array("mensaje" => "ERROR: ES un mozo."));
+                    $payload = json_encode(array("mensaje" => "ERROR: Acceso denegado."));
+                }
+            }
+            catch (Exception $e) {
+                $payload = json_encode(array("mensaje" => $e->getMessage()));
+            }           
+        }
+
+        $response->getBody()->write($payload);
+
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+    }
+
+    public function VerificarCliente (Request $request, RequestHandler $handler)
+    {
+        $response = new Response();
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if (empty($header))
+        {
+            $payload = json_encode(array("mensaje" => "ERROR: Sin token."));
+        }
+        else
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+    
+            try {
+                $data = AutentificadorJWT::ObtenerData($token);
+
+                if ($data->perfil == "cliente" || $data->perfil == "socio")
+                {
+                    $request = $request->withAttribute("id_usuario", $data->id);
+                    $request = $request->withAttribute("perfil", $data->perfil);
+
+                    return $handler->handle($request);
+                }
+                else
+                {
+                    $payload = json_encode(array("mensaje" => "ERROR: Acceso denegado."));
                 }
             }
             catch (Exception $e) {

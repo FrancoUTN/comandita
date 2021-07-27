@@ -80,7 +80,42 @@ class EmpleadoController implements IApiUsable
 
 	public function ModificarUno($request, $response, $args)
     {
+        $id = $args['id'];
 
+        $objeto = Empleado::find($id);
+
+        if ($objeto == null)
+        {
+            $payload = json_encode(array("mensaje" => "Error: No existe."));
+        }
+        else
+        {
+            $parametros = $request->getParsedBody();
+        
+            if (isset($parametros['nombre']))
+                $objeto->nombre = $parametros['nombre'];
+            
+            if (isset($parametros['clave']))
+                $objeto->clave = $parametros['clave'];
+
+            if (isset($parametros['id_sector']))
+                $objeto->id_sector = $parametros['id_sector'];
+
+            try {
+                $objeto->save();
+    
+                $payload = json_encode(array("mensaje" => "Modificacion exitosa."));
+            }
+            catch (Exception $e)
+            {
+                $payload = json_encode($e);
+            }
+        
+        }
+
+        $response->getBody()->write($payload);
+
+        return $response->withHeader('Content-Type', 'application/json');
     }
     
 	public function Login($request, $response, $args)
