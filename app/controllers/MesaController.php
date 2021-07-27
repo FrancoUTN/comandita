@@ -124,4 +124,74 @@ class MesaController implements IApiUsable
 
         return $response->withHeader('Content-Type', 'application/json');
     }
+
+	public function Pagar($request, $response, $args)
+    {
+        $codigo = $args['codigo'];
+
+        $objeto = Mesa::where("codigo", $codigo)->first();
+
+        if ($objeto == null)
+        {
+            $payload = json_encode(array("mensaje" => "Error: No existe."));
+        }
+        else if ($objeto->id_estado != 2)
+        {
+            $payload = json_encode(array("mensaje" => "Error: No esta listo para pagar."));
+        }
+        else
+        {
+            $objeto->id_estado = 3;
+
+            try {
+                $objeto->save();
+    
+                $payload = json_encode(array("mensaje" => "Modificacion exitosa."));
+            }
+            catch (Exception $e)
+            {
+                $payload = json_encode($e);
+            }
+        }
+
+        // Respuesta
+        $response->getBody()->write($payload);
+
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+	public function Cerrar($request, $response, $args)
+    {
+        $codigo = $args['codigo'];
+
+        $objeto = Mesa::where("codigo", $codigo)->first();
+
+        if ($objeto == null)
+        {
+            $payload = json_encode(array("mensaje" => "Error: No existe."));
+        }
+        else if ($objeto->id_estado != 3)
+        {
+            $payload = json_encode(array("mensaje" => "Error: Aun no ha pagado."));
+        }
+        else
+        {
+            $objeto->id_estado = 4;
+
+            try {
+                $objeto->save();
+    
+                $payload = json_encode(array("mensaje" => "Modificacion exitosa."));
+            }
+            catch (Exception $e)
+            {
+                $payload = json_encode($e);
+            }
+        }
+
+        // Respuesta
+        $response->getBody()->write($payload);
+
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 }

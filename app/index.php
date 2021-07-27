@@ -96,6 +96,8 @@ $app->group('/mesas', function (RouteCollectorProxy $group) {
     $group->post('[/]', \MesaController::class . ':CargarUno');
     $group->delete('/{id}', \MesaController::class . ':BorrarUno');
     $group->put('/{id}', \MesaController::class . ':ModificarUno');
+    $group->put('/pagar/{codigo}', \MesaController::class . ':Pagar');
+    $group->put('/cerrar/{codigo}', \MesaController::class . ':Cerrar');
 });
 
 $app->group('/pedidos', function (RouteCollectorProxy $group) {
@@ -105,6 +107,9 @@ $app->group('/pedidos', function (RouteCollectorProxy $group) {
     $group->post('[/]', \PedidoController::class . ':CargarUno');
     $group->delete('/{codigo}', \PedidoController::class . ':BorrarUno');
     $group->put('/{codigo}', \PedidoController::class . ':ModificarUno');
+    $group->put('/preparar/{codigo}', \PedidoController::class . ':Preparar');
+    $group->put('/servir/{codigo}', \PedidoController::class . ':Servir');
+    $group->put('/entregar/{codigo}', \PedidoController::class . ':Entregar');
 });
 
 $app->group('/todos', function (RouteCollectorProxy $group) {
