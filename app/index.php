@@ -12,6 +12,12 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+// Middlewares
+require_once './middlewares/AutentificadorJWT.php';
+require_once './middlewares/Verificadora.php';
+// require_once './middlewares/Generadora.php';
+
+// Controllers
 require_once './controllers/EmpleadoController.php';
 require_once './controllers/SocioController.php';
 require_once './controllers/ClienteController.php';
@@ -21,6 +27,7 @@ require_once './controllers/PedidoController.php';
 // require_once './controllers/SectorController.php';
 // require_once './controllers/FacturaController.php';
 require_once './controllers/TodoController.php'; // Testing
+
 
 // Load ENV
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -64,6 +71,8 @@ $app->group('/empleados', function (RouteCollectorProxy $group) {
     $group->post('[/]', \EmpleadoController::class . ':CargarUno');
     $group->delete('/{id}', \EmpleadoController::class . ':BorrarUno');
     $group->put('/{id}', \EmpleadoController::class . ':ModificarUno');
+
+    $group->post('/login', \EmpleadoController::class . ':Login')->add(\Verificadora::class . ':CrearJWT');
 });
 
 $app->group('/socios', function (RouteCollectorProxy $group) {
@@ -104,7 +113,7 @@ $app->group('/pedidos', function (RouteCollectorProxy $group) {
     $group->get('/{codigo}', \PedidoController::class . ':TraerUno');
     // $group->get('/id/{id}', \PedidoController::class . ':TraerPorID');
     $group->get('[/]', \PedidoController::class . ':TraerTodos');
-    $group->post('[/]', \PedidoController::class . ':CargarUno');
+    $group->post('[/]', \PedidoController::class . ':CargarUno')->add(\Verificadora::class . ':VerificarMozo');
     $group->delete('/{codigo}', \PedidoController::class . ':BorrarUno');
     $group->put('/{codigo}', \PedidoController::class . ':ModificarUno');
     $group->put('/preparar/{codigo}', \PedidoController::class . ':Preparar');

@@ -76,4 +76,44 @@ class Verificadora
 
         return $response;
     }
+    
+    // Nuevos:
+    public function VerificarMozo (Request $request, RequestHandler $handler)
+    {
+        $response = new Response();
+
+        $header = $request->getHeaderLine('Authorization');
+
+
+        if (empty($header))
+        {
+            $payload = json_encode(array("mensaje" => "ERROR: Sin token."));
+        }
+        else
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+    
+            try {
+                $data = AutentificadorJWT::ObtenerData($token);
+
+                if ($data->id_sector == "5")
+                {
+                    $request = $request->withAttribute("id_mozo", $data->id);
+
+                    return $handler->handle($request);
+                }
+                else
+                {
+                    $payload = json_encode(array("mensaje" => "ERROR: No es un mozo."));
+                }
+            }
+            catch (Exception $e) {
+                $payload = json_encode(array("mensaje" => $e->getMessage()));
+            }           
+        }
+
+        $response->getBody()->write($payload);
+
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+    }
 }

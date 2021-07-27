@@ -82,4 +82,44 @@ class EmpleadoController implements IApiUsable
     {
 
     }
+    
+	public function Login($request, $response, $args)
+    {
+        $parsedBody = $request->getParsedBody();
+
+        if (isset($parsedBody["nombre"]) && isset($parsedBody["clave"]))
+        {
+            $nombre = $parsedBody["nombre"];
+            $clave = $parsedBody["clave"];
+          
+            $objeto = Empleado::where("nombre", $nombre)->where("clave", $clave)->first();
+
+            if ($objeto == null)
+            {
+                $data = array("mensaje" => "ERROR: Usuario o clave incorrectos.");
+                
+                $status = 403;
+            }
+            else
+            {
+                $data = array("id" => $objeto->id, "id_sector" => $objeto->id_sector,);
+
+                $status = 200;
+            }
+        }
+        else
+        {
+            $data = array("mensaje" => "ERROR: Ingrese nombre y clave.");
+
+            $status = 403;
+        }
+    
+        $payload = json_encode($data);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json')
+                        ->withStatus($status);
+    }
+
 }

@@ -1,10 +1,12 @@
 <?php
 require_once './models/Pedido.php';
 require_once './models/Mesa.php';
+require_once './models/Empleado.php';
 require_once './interfaces/IApiUsable.php';
 
 use \App\Models\Pedido;
 use \App\Models\Mesa;
+use \App\Models\Empleado;
 
 class PedidoController implements IApiUsable
 {
@@ -12,7 +14,7 @@ class PedidoController implements IApiUsable
     {
         $codigo = $args['codigo'];
     
-        $objeto = Pedido::where("codigo", $codigo)->first();;
+        $objeto = Pedido::where("codigo", $codigo)->first();
     
         $payload = json_encode($objeto);
     
@@ -20,19 +22,6 @@ class PedidoController implements IApiUsable
     
         return $response->withHeader('Content-Type', 'application/json');
     }
-
-	// public function TraerPorID($request, $response, $args)
-    // {
-    //     $id = $args['id'];
-    
-    //     $objeto = Pedido::find($id);
-    
-    //     $payload = json_encode($objeto);
-    
-    //     $response->getBody()->write($payload);
-    
-    //     return $response->withHeader('Content-Type', 'application/json');
-    // }
 
 	public function TraerTodos($request, $response, $args)
     {
@@ -48,13 +37,20 @@ class PedidoController implements IApiUsable
 	public function CargarUno($request, $response, $args)
     {
         $parametros = $request->getParsedBody();
+
+        $atributo = $request->getAttribute('id_mozo');
         
-        if (isset($parametros['id_producto']) &&
+        if (isset($parametros['id_producto']) && isset($atributo) &&
             isset($parametros['codigo_mesa']) && isset($parametros['cantidad']) )
-        {
+        {            
+            $mozo = Empleado::where("id", $atributo)->first();
             $mesa = Mesa::where("codigo", $parametros['codigo_mesa'])->first();
 
-            if (empty($mesa))
+            if (empty($mozo))
+            {
+                $payload = json_encode(array("mensaje" => "Mozo no encontrado."));
+            }
+            else if (empty($mesa))
             {
                 $payload = json_encode(array("mensaje" => "Mesa no encontrada."));
             }
@@ -66,7 +62,6 @@ class PedidoController implements IApiUsable
  
                 $codigo = substr(str_shuffle($used_symbols), 0, 5);
         
-                // $objeto->codigo = $parametros['codigo'];
                 $objeto->codigo = $codigo;
                 $objeto->id_producto = $parametros['id_producto'];
                 $objeto->codigo_mesa = $parametros['codigo_mesa'];
@@ -76,10 +71,13 @@ class PedidoController implements IApiUsable
                 // FOTO OPCIONAL
 
                 $mesa->id_estado = 1; // "con cliente esperando pedido"
+                
+                $mozo->operaciones++;
 
                 try {
                     $objeto->save();
                     $mesa->save();
+                    $mozo->save();
         
                     $data = array("mensaje" => "Alta exitosa.", "codigo" => $codigo);
 
@@ -96,7 +94,6 @@ class PedidoController implements IApiUsable
             $payload = json_encode(array("mensaje" => "Datos insuficientes."));
         }
 
-        // Respuesta
         $response->getBody()->write($payload);
 
         return $response->withHeader('Content-Type', 'application/json');
