@@ -66,6 +66,7 @@ $app->get('[/]', function (Request $request, Response $response) {
 });
 
 $app->group('/empleados', function (RouteCollectorProxy $group) {
+
     $group->get('/{id}', \EmpleadoController::class . ':TraerUno');
     $group->get('[/]', \EmpleadoController::class . ':TraerTodos');
     $group->post('[/]', \EmpleadoController::class . ':CargarUno');
@@ -76,6 +77,7 @@ $app->group('/empleados', function (RouteCollectorProxy $group) {
 });
 
 $app->group('/socios', function (RouteCollectorProxy $group) {
+
     $group->get('/{id}', \SocioController::class . ':TraerUno');
     $group->get('[/]', \SocioController::class . ':TraerTodos');
     $group->post('[/]', \SocioController::class . ':CargarUno');
@@ -84,6 +86,7 @@ $app->group('/socios', function (RouteCollectorProxy $group) {
 });
 
 $app->group('/clientes', function (RouteCollectorProxy $group) {
+
     $group->get('/{id}', \ClienteController::class . ':TraerUno');
     $group->get('[/]', \ClienteController::class . ':TraerTodos');
     $group->post('[/]', \ClienteController::class . ':CargarUno');
@@ -92,6 +95,7 @@ $app->group('/clientes', function (RouteCollectorProxy $group) {
 });
 
 $app->group('/productos', function (RouteCollectorProxy $group) {
+
     $group->get('/{id}', \ProductoController::class . ':TraerUno');
     $group->get('[/]', \ProductoController::class . ':TraerTodos');
     $group->post('[/]', \ProductoController::class . ':CargarUno');
@@ -100,6 +104,7 @@ $app->group('/productos', function (RouteCollectorProxy $group) {
 });
 
 $app->group('/mesas', function (RouteCollectorProxy $group) {
+
     $group->get('/{id}', \MesaController::class . ':TraerUno');
     $group->get('[/]', \MesaController::class . ':TraerTodos');
     $group->post('[/]', \MesaController::class . ':CargarUno');
@@ -110,15 +115,29 @@ $app->group('/mesas', function (RouteCollectorProxy $group) {
 });
 
 $app->group('/pedidos', function (RouteCollectorProxy $group) {
-    $group->get('/{codigo}', \PedidoController::class . ':TraerUno');
-    // $group->get('/id/{id}', \PedidoController::class . ':TraerPorID');
+
+    $group->get('/codigo/{codigo}', \PedidoController::class . ':TraerUno');
+    
     $group->get('[/]', \PedidoController::class . ':TraerTodos');
-    $group->post('[/]', \PedidoController::class . ':CargarUno')->add(\Verificadora::class . ':VerificarMozo');
+
+    $group->get('/pendientes', \PedidoController::class . ':TraerPendientes')
+        ->add(\Verificadora::class . ':VerificarEmpleado');
+
+    $group->post('[/]', \PedidoController::class . ':CargarUno')
+        ->add(\Verificadora::class . ':VerificarMozo');
+
     $group->delete('/{codigo}', \PedidoController::class . ':BorrarUno');
+
     $group->put('/{codigo}', \PedidoController::class . ':ModificarUno');
-    $group->put('/preparar/{codigo}', \PedidoController::class . ':Preparar');
-    $group->put('/servir/{codigo}', \PedidoController::class . ':Servir');
-    $group->put('/entregar/{codigo}', \PedidoController::class . ':Entregar');
+
+    $group->put('/preparar/{codigo}', \PedidoController::class . ':Preparar')
+        ->add(\Verificadora::class . ':VerificarEmpleado');
+
+    $group->put('/servir/{codigo}', \PedidoController::class . ':Servir')
+        ->add(\Verificadora::class . ':VerificarEmpleado');
+
+    $group->put('/entregar/{codigo}', \PedidoController::class . ':Entregar')
+        ->add(\Verificadora::class . ':VerificarMozo');
 });
 
 $app->group('/todos', function (RouteCollectorProxy $group) {

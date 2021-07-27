@@ -84,7 +84,6 @@ class Verificadora
 
         $header = $request->getHeaderLine('Authorization');
 
-
         if (empty($header))
         {
             $payload = json_encode(array("mensaje" => "ERROR: Sin token."));
@@ -105,6 +104,47 @@ class Verificadora
                 else
                 {
                     $payload = json_encode(array("mensaje" => "ERROR: No es un mozo."));
+                }
+            }
+            catch (Exception $e) {
+                $payload = json_encode(array("mensaje" => $e->getMessage()));
+            }           
+        }
+
+        $response->getBody()->write($payload);
+
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+    }
+
+    public function VerificarEmpleado (Request $request, RequestHandler $handler)
+    {
+        $response = new Response();
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if (empty($header))
+        {
+            $payload = json_encode(array("mensaje" => "ERROR: Sin token."));
+        }
+        else
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+    
+            try {
+                $data = AutentificadorJWT::ObtenerData($token);
+
+                $id_sector = $data->id_sector;
+
+                if ($id_sector >= 1 && $id_sector <= 4)
+                {
+                    $request = $request->withAttribute("id_empleado", $data->id);
+                    $request = $request->withAttribute("id_sector", $id_sector);
+
+                    return $handler->handle($request);
+                }
+                else
+                {
+                    $payload = json_encode(array("mensaje" => "ERROR: ES un mozo."));
                 }
             }
             catch (Exception $e) {

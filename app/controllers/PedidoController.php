@@ -2,11 +2,13 @@
 require_once './models/Pedido.php';
 require_once './models/Mesa.php';
 require_once './models/Empleado.php';
+require_once './models/Producto.php';
 require_once './interfaces/IApiUsable.php';
 
 use \App\Models\Pedido;
 use \App\Models\Mesa;
 use \App\Models\Empleado;
+use \App\Models\Producto;
 
 class PedidoController implements IApiUsable
 {
@@ -27,6 +29,29 @@ class PedidoController implements IApiUsable
     {
         $lista = Pedido::all();
     
+        $payload = json_encode($lista);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+	public function TraerPendientes($request, $response, $args)
+    {
+        // $id_empleado = $request->getAttribute('id_empleado');
+        $id_sector = $request->getAttribute('id_sector');
+
+        $pendientes = Pedido::where("id_estado", 1)->get();
+    
+        $productosSector = Producto::where("id_sector", $id_sector)->get();
+
+        $lista = array();
+
+        foreach ($pendientes as $pedido)
+            foreach ($productosSector as $producto)
+                if ($pedido->id_producto == $producto->id)
+                    $lista[] = $pedido;
+
         $payload = json_encode($lista);
     
         $response->getBody()->write($payload);
