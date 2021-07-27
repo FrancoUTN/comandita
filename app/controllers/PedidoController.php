@@ -92,11 +92,31 @@ class PedidoController implements IApiUsable
                 $objeto->cantidad = $parametros['cantidad'];
                 $objeto->id_estado = 1; // Empieza "pendiente"
 
-                // FOTO OPCIONAL
-
                 $mesa->id_estado = 1; // "con cliente esperando pedido"
                 
                 $mozo->operaciones++;
+
+                // FOTO OPCIONAL
+                $archivos = $request->getUploadedFiles();
+
+                if (!empty($archivos))
+                {
+                    $destino = "./FotosMesas/";
+    
+                    $nombreAnterior = $archivos['foto']->getClientFilename();
+                    $extension = explode(".", $nombreAnterior);
+                    $extension = array_reverse($extension)[0];
+    
+                    $uso = $mesa->usos + 1;
+
+                    $nombreNuevo = $mesa->codigo . "uso" . $uso . "." . $extension;
+
+                    $pathFoto = $destino . $nombreNuevo;
+    
+                    $archivos['foto']->moveTo($pathFoto);
+                    
+                    $mesa->foto = $nombreNuevo;
+                }
 
                 try {
                     $objeto->save();

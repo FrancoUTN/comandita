@@ -177,6 +177,8 @@ class MesaController implements IApiUsable
         else
         {
             $objeto->id_estado = 4;
+            $objeto->usos++;
+            $objeto->foto = NULL;
 
             try {
                 $objeto->save();
