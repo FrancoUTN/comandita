@@ -40,7 +40,7 @@ class Verificadora
             $tipo = AutentificadorJWT::ObtenerData($token)->tipo;
         }
         catch (Exception $e) {
-            return $response->withStatus(400);
+            return $response->withStatus(403);
         }
 
         if ($tipo != "admin")

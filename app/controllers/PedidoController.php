@@ -38,7 +38,6 @@ class PedidoController implements IApiUsable
 
 	public function TraerPendientes($request, $response, $args)
     {
-        // $id_empleado = $request->getAttribute('id_empleado');
         $id_sector = $request->getAttribute('id_sector');
 
         $pendientes = Pedido::where("id_estado", 1)->get();
@@ -141,60 +140,17 @@ class PedidoController implements IApiUsable
 
 	public function ModificarUno($request, $response, $args)
     {
-        // $codigo = $args['codigo'];
-    
-        // $objeto = Pedido::where("codigo", $codigo)->first();;
-
-        // if ($objeto == null)
-        // {
-        //     $payload = json_encode(array("mensaje" => "Error: No existe."));
-        // }
-        // else
-        // {
-        //     $parametros = $request->getParsedBody();
-
-        //     if ($objeto->id_estado == 1)
-        //     {
-        //         $objeto->hora_inicio = date('Y-m-d H:i:s');
-
-        //         if (isset($parametros['tiempo_estimado']))
-        //         {
-        //             $objeto->hora_estimada = date('Y-m-d H:i:s', time() + $parametros['tiempo_estimado']);
-        //         }
-        //         else
-        //         {
-        //             $objeto->hora_estimada = date('Y-m-d H:i:s', time() + 30);
-        //         }
-        //     }
-
-        //     $objeto->id_estado += 1;
-
-        //     try {
-        //         $objeto->save();
-    
-        //         $payload = json_encode(array("mensaje" => "Modificacion exitosa."));
-        //     }
-        //     catch (Exception $e)
-        //     {
-        //         $payload = json_encode($e);
-        //     }
-        // }
-
-        // // Respuesta
-        // $response->getBody()->write($payload);
-
         return $response->withHeader('Content-Type', 'application/json');
     }
 
     public function Preparar($request, $response, $args)
     {
-        $codigo = $args['codigo'];
-    
+        $codigo = $args['codigo'];    
         $objeto = Pedido::where("codigo", $codigo)->first();
-
+    
         if ($objeto == null)
         {
-            $payload = json_encode(array("mensaje" => "Error: No existe."));
+            $payload = json_encode(array("mensaje" => "Error: No existe el pedido."));
         }
         else if ($objeto->id_estado != 1)
         {
@@ -202,29 +158,63 @@ class PedidoController implements IApiUsable
         }
         else
         {
-            $parametros = $request->getParsedBody();
+            $id_producto = $objeto->id_producto;
+            $producto = Producto::where("id", $id_producto)->first();
 
-            if (empty($parametros['tiempo_estimado']))
+            if ($producto == null)
             {
-                $payload = json_encode(array("mensaje" => "Error: Falta el tiempo estimado de preparacion."));
+                $payload = json_encode(array("mensaje" => "Error: No existe el producto."));
             }
             else
             {
-                $objeto->hora_inicio = date('Y-m-d H:i:s');
-    
-                $objeto->hora_estimada = date('Y-m-d H:i:s', time() + $parametros['tiempo_estimado']);
-    
-                $objeto->id_estado += 1;
-    
-                try {
-                    $objeto->save();
-        
-                    $payload = json_encode(array("mensaje" => "Modificacion exitosa."));
-                }
-                catch (Exception $e)
+                $id_sector = $request->getAttribute('id_sector');
+
+                if ($producto->id_sector != $id_sector)
                 {
-                    $payload = json_encode($e);
-                }    
+                    $payload = json_encode(array("mensaje" => "Error: Sector incorrecto."));
+                }
+                else
+                {
+                    $id_empleado = $request->getAttribute('id_empleado');
+                    $empleado = Empleado::where("id", $id_empleado)->first();
+
+                    if ($empleado == null)
+                    {
+                        $payload = json_encode(array("mensaje" => "Error: No existe el empleado."));
+                    }
+                    else
+                    {
+                        $parametros = $request->getParsedBody();
+    
+                        if (empty($parametros['tiempo_estimado']))
+                        {
+                            $payload = json_encode(array("mensaje" => "Error: Falta el tiempo estimado de preparacion."));
+                        }
+                        else
+                        {
+                            $objeto->hora_inicio = date('Y-m-d H:i:s');
+                
+                            $objeto->hora_estimada = date('Y-m-d H:i:s', time() + $parametros['tiempo_estimado']);
+                
+                            $objeto->id_estado += 1;
+
+                            $objeto->id_empleado = $id_empleado;
+
+                            $empleado->operaciones++;
+                
+                            try {
+                                $objeto->save();
+                                $empleado->save();
+                    
+                                $payload = json_encode(array("mensaje" => "Modificacion exitosa."));
+                            }
+                            catch (Exception $e)
+                            {
+                                $payload = json_encode($e);
+                            }
+                        }
+                    }                    
+                }
             }
         }        
 
@@ -249,17 +239,30 @@ class PedidoController implements IApiUsable
             $payload = json_encode(array("mensaje" => "Error: No esta en preparacion."));
         }
         else
-        {
-            $objeto->id_estado += 1;
+        {            
+            $id_empleado = $request->getAttribute('id_empleado');
 
-            try {
-                $objeto->save();
-    
-                $payload = json_encode(array("mensaje" => "Modificacion exitosa."));
-            }
-            catch (Exception $e)
+            if ($objeto->id_empleado != $id_empleado)
             {
-                $payload = json_encode($e);
+                $payload = json_encode(array("mensaje" => "Error: No coincide el empleado."));
+            }
+            else
+            {
+                $empleado = Empleado::where("id", $id_empleado)->first();
+
+                $objeto->id_estado += 1;
+                $empleado->operaciones++;
+    
+                try {
+                    $objeto->save();
+                    $empleado->save();
+        
+                    $payload = json_encode(array("mensaje" => "Modificacion exitosa."));
+                }
+                catch (Exception $e)
+                {
+                    $payload = json_encode($e);
+                }
             }
         }        
 
@@ -285,21 +288,34 @@ class PedidoController implements IApiUsable
         }
         else
         {
-            $objeto->id_estado += 1;
-            $objeto->hora_entrega = date('Y-m-d H:i:s');
-            
-            $mesa = Mesa::where("codigo", $objeto->codigo_mesa)->first();
-            $mesa->id_estado = 2;
+            $atributo = $request->getAttribute('id_mozo');            
+            $mozo = Empleado::where("id", $atributo)->first();
 
-            try {
-                $objeto->save();
-                $mesa->save();
-    
-                $payload = json_encode(array("mensaje" => "Modificacion exitosa."));
-            }
-            catch (Exception $e)
+            if ($mozo == null)
             {
-                $payload = json_encode($e);
+                $payload = json_encode(array("mensaje" => "Error: No existe el mozo."));
+            }
+            else
+            {
+                $objeto->id_estado += 1;
+                $objeto->hora_entrega = date('Y-m-d H:i:s');
+                
+                $mesa = Mesa::where("codigo", $objeto->codigo_mesa)->first();
+                $mesa->id_estado = 2;
+
+                $mozo->operaciones++;
+    
+                try {
+                    $objeto->save();
+                    $mesa->save();
+                    $mozo->save();
+        
+                    $payload = json_encode(array("mensaje" => "Modificacion exitosa."));
+                }
+                catch (Exception $e)
+                {
+                    $payload = json_encode($e);
+                }
             }
         }
 
