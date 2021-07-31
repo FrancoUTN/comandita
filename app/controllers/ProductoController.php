@@ -38,7 +38,7 @@ class ProductoController implements IApiUsable
         $nombre = $parametros['nombre'];
         $id_sector = $parametros['id_sector'];
         $precio = $parametros['precio'];
-        $demora = $parametros['demora'];
+        // $demora = $parametros['demora'];
 
         // Creación
         $objeto = new Producto();
@@ -46,7 +46,7 @@ class ProductoController implements IApiUsable
         $objeto->nombre = $nombre;
         $objeto->id_sector = $id_sector;
         $objeto->precio = $precio;
-        $objeto->demora = $demora;
+        // $objeto->demora = $demora;
 
         try {
             $objeto->save();
