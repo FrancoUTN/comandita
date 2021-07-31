@@ -1,16 +1,16 @@
 <?php
-require_once './models/Mesa.php';
+require_once './models/Factura.php';
 require_once './interfaces/IApiUsable.php';
 
-use \App\Models\Mesa as Mesa;
+use \App\Models\Factura as Factura;
 
-class MesaController implements IApiUsable
+class FacturaController implements IApiUsable
 {
 	public function TraerUno($request, $response, $args)
     {
         $id = $args['id'];
     
-        $objeto = Mesa::find($id);
+        $objeto = Factura::find($id);
     
         $payload = json_encode($objeto);
     
@@ -21,7 +21,7 @@ class MesaController implements IApiUsable
 
 	public function TraerTodos($request, $response, $args)
     {
-        $lista = Mesa::all();
+        $lista = Factura::all();
     
         $payload = json_encode($lista);
     
@@ -34,20 +34,14 @@ class MesaController implements IApiUsable
     {
         $parametros = $request->getParsedBody();
         
-        if (isset($parametros['codigo']) &&
-            isset($parametros['estado']) &&
-            isset($parametros['usos']))
+        if (isset($parametros['codigo_mesa']) &&
+            isset($parametros['importe']))
         {
-            $objeto = new Mesa();
+            $objeto = new Factura();
     
-            $objeto->codigo = $parametros['codigo'];
-            $objeto->estado = $parametros['estado'];
-            $objeto->usos = $parametros['usos'];
+            $objeto->codigo_mesa = $parametros['codigo_mesa'];
+            $objeto->importe = $parametros['importe'];
     
-
-            // FOTO OPCIONAL
-
-
             try {
                 $objeto->save();
     
@@ -63,7 +57,6 @@ class MesaController implements IApiUsable
             $payload = json_encode(array("mensaje" => "Datos insuficientes."));
         }
 
-        // Respuesta
         $response->getBody()->write($payload);
 
         return $response->withHeader('Content-Type', 'application/json');
@@ -73,7 +66,7 @@ class MesaController implements IApiUsable
     {
         $id = $args['id'];
     
-        $objeto = Mesa::find($id);
+        $objeto = Factura::find($id);
     
         $objeto->delete();
     
@@ -88,7 +81,7 @@ class MesaController implements IApiUsable
     {
         $id = $args['id'];
 
-        $objeto = Mesa::find($id);
+        $objeto = Factura::find($id);
 
         if ($objeto == null)
         {
@@ -98,17 +91,11 @@ class MesaController implements IApiUsable
         {
             $parametros = $request->getParsedBody();
         
-            if (isset($parametros['codigo']))
-                $objeto->codigo = $parametros['codigo'];
+            if (isset($parametros['codigo_mesa']))
+                $objeto->codigo_mesa = $parametros['codigo_mesa'];
             
-            if (isset($parametros['estado']))
-                $objeto->estado = $parametros['estado'];
-
-            if (isset($parametros['usos']))
-                $objeto->usos = $parametros['usos'];
-
-            if (isset($parametros['foto']))
-                $objeto->foto = $parametros['foto']; // HACER BACKUP
+            if (isset($parametros['importe']))
+                $objeto->importe = $parametros['importe'];
 
             try {
                 $objeto->save();
@@ -121,7 +108,6 @@ class MesaController implements IApiUsable
             }
         }
 
-        // Respuesta
         $response->getBody()->write($payload);
 
         return $response->withHeader('Content-Type', 'application/json');

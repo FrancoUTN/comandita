@@ -14,7 +14,6 @@ class Cliente extends Model
     public $incrementing = true;
     public $timestamps = false;
 
-    const CREATED_AT = 'fechaAlta';
     const DELETED_AT = 'fechaBaja';
 
     protected $fillable = [

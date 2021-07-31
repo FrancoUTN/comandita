@@ -1,16 +1,16 @@
 <?php
-require_once './models/Mesa.php';
+require_once './models/Encuesta.php';
 require_once './interfaces/IApiUsable.php';
 
-use \App\Models\Mesa as Mesa;
+use \App\Models\Encuesta as Encuesta;
 
-class MesaController implements IApiUsable
+class EncuestaController implements IApiUsable
 {
 	public function TraerUno($request, $response, $args)
     {
         $id = $args['id'];
     
-        $objeto = Mesa::find($id);
+        $objeto = Encuesta::find($id);
     
         $payload = json_encode($objeto);
     
@@ -21,7 +21,7 @@ class MesaController implements IApiUsable
 
 	public function TraerTodos($request, $response, $args)
     {
-        $lista = Mesa::all();
+        $lista = Encuesta::all();
     
         $payload = json_encode($lista);
     
@@ -33,21 +33,26 @@ class MesaController implements IApiUsable
 	public function CargarUno($request, $response, $args)
     {
         $parametros = $request->getParsedBody();
+        $codigo_mesa = $request->getAttribute('codigo_mesa');
         
-        if (isset($parametros['codigo']) &&
-            isset($parametros['estado']) &&
-            isset($parametros['usos']))
+        if (isset($codigo_mesa) &&
+            isset($parametros['puntos_mesa']) &&
+            isset($parametros['puntos_restaurante']) &&
+            isset($parametros['puntos_mozo']) &&
+            isset($parametros['puntos_cocinero'])
+            )
         {
-            $objeto = new Mesa();
+            $objeto = new Encuesta();
     
-            $objeto->codigo = $parametros['codigo'];
-            $objeto->estado = $parametros['estado'];
-            $objeto->usos = $parametros['usos'];
+            $objeto->codigo_mesa = $codigo_mesa;
+            $objeto->puntos_mesa = $parametros['puntos_mesa'];
+            $objeto->puntos_restaurante = $parametros['puntos_restaurante'];
+            $objeto->puntos_mozo = $parametros['puntos_mozo'];
+            $objeto->puntos_cocinero = $parametros['puntos_cocinero'];
+
+            if (isset($parametros['experiencia']))
+                $objeto->experiencia = $parametros['experiencia']; // Por defecto: NULL
     
-
-            // FOTO OPCIONAL
-
-
             try {
                 $objeto->save();
     
@@ -63,7 +68,6 @@ class MesaController implements IApiUsable
             $payload = json_encode(array("mensaje" => "Datos insuficientes."));
         }
 
-        // Respuesta
         $response->getBody()->write($payload);
 
         return $response->withHeader('Content-Type', 'application/json');
@@ -73,7 +77,7 @@ class MesaController implements IApiUsable
     {
         $id = $args['id'];
     
-        $objeto = Mesa::find($id);
+        $objeto = Encuesta::find($id);
     
         $objeto->delete();
     
@@ -88,7 +92,7 @@ class MesaController implements IApiUsable
     {
         $id = $args['id'];
 
-        $objeto = Mesa::find($id);
+        $objeto = Encuesta::find($id);
 
         if ($objeto == null)
         {
@@ -98,17 +102,23 @@ class MesaController implements IApiUsable
         {
             $parametros = $request->getParsedBody();
         
-            if (isset($parametros['codigo']))
-                $objeto->codigo = $parametros['codigo'];
+            if (isset($parametros['codigo_mesa']))
+                $objeto->codigo_mesa = $parametros['codigo_mesa'];
             
-            if (isset($parametros['estado']))
-                $objeto->estado = $parametros['estado'];
+            if (isset($parametros['puntos_mesa']))
+                $objeto->puntos_mesa = $parametros['puntos_mesa'];
 
-            if (isset($parametros['usos']))
-                $objeto->usos = $parametros['usos'];
+            if (isset($parametros['puntos_restaurante']))
+                $objeto->puntos_restaurante = $parametros['puntos_restaurante'];
 
-            if (isset($parametros['foto']))
-                $objeto->foto = $parametros['foto']; // HACER BACKUP
+            if (isset($parametros['puntos_mozo']))
+                $objeto->puntos_mozo = $parametros['puntos_mozo'];
+
+            if (isset($parametros['puntos_cocinero']))
+                $objeto->puntos_cocinero = $parametros['puntos_cocinero'];
+
+            if (isset($parametros['experiencia']))
+                $objeto->experiencia = $parametros['experiencia'];
 
             try {
                 $objeto->save();
@@ -121,7 +131,6 @@ class MesaController implements IApiUsable
             }
         }
 
-        // Respuesta
         $response->getBody()->write($payload);
 
         return $response->withHeader('Content-Type', 'application/json');

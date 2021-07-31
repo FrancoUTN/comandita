@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Factura extends Model
+class Encuesta extends Model
 {
     use SoftDeletes;
 
     protected $primaryKey = 'id';
-    protected $table = 'facturas';
+    protected $table = 'encuestas';
     public $incrementing = true;
     // public $timestamps = false;
 
@@ -19,6 +19,6 @@ class Factura extends Model
     const DELETED_AT = 'fechaBaja';
 
     protected $fillable = [
-        'codigo_mesa', 'importe', 'fechaAlta', 'fechaBaja'
+        'codigo_mesa', 'puntos_mesa', 'puntos_restaurante', 'puntos_mozo', 'puntos_cocinero', 'experiencia' ,'fechaAlta', 'fechaBaja'
     ];
 }

@@ -14,6 +14,7 @@ require __DIR__ . '/../vendor/autoload.php';
 // Middlewares
 require_once './middlewares/AutentificadorJWT.php';
 require_once './middlewares/Verificadora.php';
+require_once './middlewares/VerificadoraModels.php';
 require_once './middlewares/Generadora.php';
 
 // Controllers
@@ -23,8 +24,8 @@ require_once './controllers/ClienteController.php';
 require_once './controllers/ProductoController.php';
 require_once './controllers/MesaController.php';
 require_once './controllers/PedidoController.php';
-// require_once './controllers/SectorController.php';
-// require_once './controllers/FacturaController.php';
+require_once './controllers/FacturaController.php';
+require_once './controllers/EncuestaController.php';
 require_once './controllers/TodoController.php'; // Testing
 
 
@@ -212,22 +213,33 @@ $app->group('/todos', function (RouteCollectorProxy $group) {
         // ->add(\Verificadora::class . ':VerificarCliente');
 });
 
-// $app->group('/sectores', function (RouteCollectorProxy $group) {
-//     $group->get('/{id}', \SectorController::class . ':TraerUno');
-//     $group->get('[/]', \SectorController::class . ':TraerTodos');
-//     $group->post('[/]', \SectorController::class . ':CargarUno');
-//     $group->delete('/{id}', \SectorController::class . ':BorrarUno');
-//     $group->put('/{id}', \SectorController::class . ':ModificarUno');
-// });
+$app->group('/facturas', function (RouteCollectorProxy $group) {
 
-// $app->group('/facturas', function (RouteCollectorProxy $group) {
-//     $group->get('/{id}', \FacturaController::class . ':TraerUno');
-//     $group->get('[/]', \FacturaController::class . ':TraerTodos');
-//     $group->post('[/]', \FacturaController::class . ':CargarUno');
-//     $group->delete('/{id}', \FacturaController::class . ':BorrarUno');
-//     $group->put('/{id}', \FacturaController::class . ':ModificarUno');
-// });
+    $group->get('/{id}', \FacturaController::class . ':TraerUno');
 
+    $group->get('[/]', \FacturaController::class . ':TraerTodos');
+
+    $group->post('[/]', \FacturaController::class . ':CargarUno');
+
+    $group->delete('/{id}', \FacturaController::class . ':BorrarUno');
+
+    $group->put('/{id}', \FacturaController::class . ':ModificarUno');
+});
+
+$app->group('/encuestas', function (RouteCollectorProxy $group) {
+
+    $group->get('/{id}', \EncuestaController::class . ':TraerUno');
+
+    $group->get('[/]', \EncuestaController::class . ':TraerTodos');
+
+    $group->post('[/]', \EncuestaController::class . ':CargarUno')
+        ->add(\VerificadoraModels::class . ':VerificarClienteParaEncuesta')
+        ->add(\Verificadora::class . ':VerificarCliente');
+
+    $group->delete('/{id}', \EncuestaController::class . ':BorrarUno');
+
+    $group->put('/{id}', \EncuestaController::class . ':ModificarUno');
+});
 
 // Run app
 $app->run();
