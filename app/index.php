@@ -176,10 +176,14 @@ $app->group('/mesas', function (RouteCollectorProxy $group) {
         ->add(\Verificadora::class . ':VerificarSocio');
 
     
+    $group->get('/consultas/masusada', \MesaController::class . ':MasUsada');
+    $group->get('/consultas/menosusada', \MesaController::class . ':MenosUsada');
     $group->get('/consultas/masfacturada', \MesaController::class . ':MasFacturada');
     $group->get('/consultas/menosfacturada', \MesaController::class . ':MenosFacturada');
     $group->get('/consultas/mayorfactura', \MesaController::class . ':MayorFactura');
     $group->get('/consultas/menorfactura', \MesaController::class . ':MenorFactura');
+    $group->get('/consultas/mejores/{codigo}', \MesaController::class . ':VerMejoresComentarios');
+    $group->get('/consultas/peores/{codigo}', \MesaController::class . ':VerPeoresComentarios');
 });
 
 $app->group('/pedidos', function (RouteCollectorProxy $group) {
@@ -214,6 +218,12 @@ $app->group('/pedidos', function (RouteCollectorProxy $group) {
 
     $group->put('/entregar/{codigo}', \PedidoController::class . ':Entregar')
         ->add(\Verificadora::class . ':VerificarMozo');
+
+
+    $group->get('/consultas/vermasvendido', \PedidoController::class . ':VerMasVendido');
+    $group->get('/consultas/vermenosvendido', \PedidoController::class . ':VerMenosVendido');
+    $group->get('/consultas/vercancelados', \PedidoController::class . ':VerCancelados');
+    // $group->get('/consultas/vermasvendido', \PedidoController::class . ':VerMasVendido');
 });
 
 $app->group('/todos', function (RouteCollectorProxy $group) {
@@ -250,7 +260,7 @@ $app->group('/encuestas', function (RouteCollectorProxy $group) {
 
     $group->delete('/{id}', \EncuestaController::class . ':BorrarUno');
 
-    $group->put('/{id}', \EncuestaController::class . ':ModificarUno');
+    $group->put('/{id}', \EncuestaController::class . ':ModificarUno');        
 });
 
 // Run app

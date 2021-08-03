@@ -1,10 +1,12 @@
 <?php
 require_once './models/Mesa.php';
 require_once './models/Factura.php';
+require_once './models/Encuesta.php';
 require_once './interfaces/IApiUsable.php';
 
 use \App\Models\Mesa;
 use \App\Models\Factura as Factura;
+use \App\Models\Encuesta as Encuesta;
 
 class MesaController implements IApiUsable
 {
@@ -199,37 +201,31 @@ class MesaController implements IApiUsable
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    // public function MasUsada($request, $response, $args)
-    // {
-    //     $lista = Factura::all();
+    public function MasUsada($request, $response, $args)
+    {
+        $max = Mesa::max('usos');
 
-    //     $join = 
-    //     $lista = Mesa::select("codigo", "estado")->join('estados_mesa', 'mesas.id_estado', '=', 'estados_mesa.id')->get();
+        $data = Mesa::select("codigo")->where("usos", $max)->get();
     
-    //     $payload = json_encode($lista);
+        $payload = json_encode($data);
     
-    //     $response->getBody()->write($payload);
+        $response->getBody()->write($payload);
     
-    //     return $response->withHeader('Content-Type', 'application/json');
-    // }
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 
-	// public function MasFacturada($request, $response, $args)
-    // {
-    //         // $lista = Factura::all();
-            
-    //         // $suma = Factura::select("*")->groupby("codigo_mesa")->sum("importe")->get();
-    //         $suma = Factura::select("*")->get("")->groupBy("codigo_mesa");
-    //         // $suma = Factura::select("*")->groupBy("codigo_mesa");
-    //         // $suma = Factura::select("*")->groupBy("codigo_mesa")->get();
-    //         // $suma = Factura::select("*")->get();
-        
-    //         $payload = json_encode($suma);
-        
-    //         $response->getBody()->write($payload);
-        
-    //         return $response->withHeader('Content-Type', 'application/json');
+    public function MenosUsada($request, $response, $args)
+    {
+        $min = Mesa::min('usos');
 
-    // }
+        $data = Mesa::select("codigo")->where("usos", $min)->get();
+    
+        $payload = json_encode($data);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 
 	public function MasFacturada($request, $response, $args)
     {
@@ -301,4 +297,41 @@ class MesaController implements IApiUsable
         return $response->withHeader('Content-Type', 'application/json');
     }
     
+	public function VerMejoresComentarios($request, $response, $args)
+    {
+        if (empty($args['codigo']))
+        {
+            $lista = "No existe la mesa.";
+        }
+        else
+        {
+            $lista = Encuesta::select("experiencia", "puntos_mesa")->where("codigo_mesa", $args['codigo'])
+                                                    ->orderby("puntos_mesa", "DESC")->get();
+        }
+        
+        $payload = json_encode($lista);
+        
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+	public function VerPeoresComentarios($request, $response, $args)
+    {
+        if (empty($args['codigo']))
+        {
+            $lista = "No existe la mesa.";
+        }
+        else
+        {
+            $lista = Encuesta::select("experiencia", "puntos_mesa")->where("codigo_mesa", $args['codigo'])
+                                                    ->orderby("puntos_mesa")->get();
+        }
+        
+        $payload = json_encode($lista);
+        
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 }

@@ -344,4 +344,63 @@ class PedidoController implements IApiUsable
 
         return $response->withHeader('Content-Type', 'application/json');
     }
+
+    public function VerMasVendido($request, $response, $args)
+    {
+        $lista = Pedido::selectRaw("productos.nombre, SUM(cantidad) as suma")
+                        ->join('productos', 'pedidos.id_producto', '=', 'productos.id')
+                        ->groupby("id_producto")->get();
+
+        $max = 0;
+
+        foreach ($lista as $producto)
+        {
+            if ($producto->suma > $max)
+            {
+                $max = $producto->suma;
+                $objeto = $producto;
+            }
+        }
+        
+        $payload = json_encode($objeto);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    public function VerMenosVendido($request, $response, $args)
+    {
+        $lista = Pedido::selectRaw("productos.nombre, SUM(cantidad) as suma")
+                        ->join('productos', 'pedidos.id_producto', '=', 'productos.id')
+                        ->groupby("id_producto")->get();
+
+        $min = 999999;
+
+        foreach ($lista as $producto)
+        {
+            if ($producto->suma < $min)
+            {
+                $min = $producto->suma;
+                $objeto = $producto;
+            }
+        }
+        
+        $payload = json_encode($objeto);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    public function VerCancelados($request, $response, $args)
+    {
+        $lista = Pedido::onlyTrashed()->get();
+        
+        $payload = json_encode($lista);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 }
