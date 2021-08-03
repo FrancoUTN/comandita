@@ -403,4 +403,24 @@ class PedidoController implements IApiUsable
     
         return $response->withHeader('Content-Type', 'application/json');
     }
+
+	public function VerTardios($request, $response, $args)
+    {
+        $lista = Pedido::all();
+        $nuevalista = array();
+
+        foreach ($lista as $pedido)
+        {
+            if ($pedido->hora_entrega > $pedido->hora_estimada)
+            {
+                $nuevalista[] = $pedido;
+            }
+        }
+        
+        $payload = json_encode($nuevalista);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 }

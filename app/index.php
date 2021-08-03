@@ -184,6 +184,7 @@ $app->group('/mesas', function (RouteCollectorProxy $group) {
     $group->get('/consultas/menorfactura', \MesaController::class . ':MenorFactura');
     $group->get('/consultas/mejores/{codigo}', \MesaController::class . ':VerMejoresComentarios');
     $group->get('/consultas/peores/{codigo}', \MesaController::class . ':VerPeoresComentarios');
+    $group->get('/consultas/fechas/{fecha1}/{fecha2}', \MesaController::class . ':VerFacturacionEntreFechas');
 });
 
 $app->group('/pedidos', function (RouteCollectorProxy $group) {
@@ -223,7 +224,7 @@ $app->group('/pedidos', function (RouteCollectorProxy $group) {
     $group->get('/consultas/vermasvendido', \PedidoController::class . ':VerMasVendido');
     $group->get('/consultas/vermenosvendido', \PedidoController::class . ':VerMenosVendido');
     $group->get('/consultas/vercancelados', \PedidoController::class . ':VerCancelados');
-    // $group->get('/consultas/vermasvendido', \PedidoController::class . ':VerMasVendido');
+    $group->get('/consultas/vertardios', \PedidoController::class . ':VerTardios');
 });
 
 $app->group('/todos', function (RouteCollectorProxy $group) {

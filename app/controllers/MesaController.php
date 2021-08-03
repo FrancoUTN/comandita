@@ -334,4 +334,20 @@ class MesaController implements IApiUsable
     
         return $response->withHeader('Content-Type', 'application/json');
     }
+    
+	public function VerFacturacionEntreFechas($request, $response, $args)
+    {
+        $from = $args['fecha1'];
+        $to = $args['fecha2'];
+
+        $lista = Factura::selectRaw("codigo_mesa, SUM(importe) as suma")
+                        ->whereBetween('fechaAlta', [$from, $to])
+                        ->groupBy("codigo_mesa")->get();
+        
+        $payload = json_encode($lista);
+        
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 }
