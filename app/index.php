@@ -84,6 +84,12 @@ $app->group('/empleados', function (RouteCollectorProxy $group) {
 
     $group->post('/login', \EmpleadoController::class . ':Login')
         ->add(\Verificadora::class . ':CrearJWT');
+
+        
+    $group->get('/consultas/veringresos', \EmpleadoController::class . ':VerIngresos');
+    $group->get('/consultas/veroperacionesporsector', \EmpleadoController::class . ':VerOperacionesPorSector');
+    $group->get('/consultas/veroperacionesporsectoryempleado', \EmpleadoController::class . ':VerOperacionesPorSectorYEmpleado');
+    $group->get('/consultas/veroperaciones', \EmpleadoController::class . ':VerOperaciones');
 });
 
 $app->group('/socios', function (RouteCollectorProxy $group) {
@@ -168,6 +174,12 @@ $app->group('/mesas', function (RouteCollectorProxy $group) {
 
     $group->put('/cerrar/{codigo}', \MesaController::class . ':Cerrar')
         ->add(\Verificadora::class . ':VerificarSocio');
+
+    
+    $group->get('/consultas/masfacturada', \MesaController::class . ':MasFacturada');
+    $group->get('/consultas/menosfacturada', \MesaController::class . ':MenosFacturada');
+    $group->get('/consultas/mayorfactura', \MesaController::class . ':MayorFactura');
+    $group->get('/consultas/menorfactura', \MesaController::class . ':MenorFactura');
 });
 
 $app->group('/pedidos', function (RouteCollectorProxy $group) {

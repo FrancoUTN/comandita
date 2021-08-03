@@ -157,4 +157,50 @@ class EmpleadoController implements IApiUsable
                         ->withStatus($status);
     }
 
+	public function VerIngresos($request, $response, $args)
+    {
+        $data = Empleado::select("nombre", "fechaAlta")->get();
+
+        $payload = json_encode($data);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+	public function VerOperacionesPorSector($request, $response, $args)
+    {
+        $data = Empleado::selectRaw("sectores.nombre as Sector, SUM(operaciones) as Operaciones")->join('sectores', 'empleados.id_sector', '=', 'sectores.id')->groupBy("Sector")->get();
+        
+        $payload = json_encode($data);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+	public function VerOperacionesPorSectorYEmpleado($request, $response, $args)
+    {
+        $data = Empleado::selectRaw("sectores.nombre as Sector, empleados.nombre as Empleado, operaciones as Operaciones")->join('sectores', 'empleados.id_sector', '=', 'sectores.id')->orderby("empleados.id_sector")->get();
+        
+        $payload = json_encode($data);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+
+    }
+
+	public function VerOperaciones($request, $response, $args)
+    {
+        $data = Empleado::select("nombre", "operaciones")->get();
+
+        $payload = json_encode($data);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+
 }

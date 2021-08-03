@@ -1,8 +1,10 @@
 <?php
 require_once './models/Mesa.php';
+require_once './models/Factura.php';
 require_once './interfaces/IApiUsable.php';
 
 use \App\Models\Mesa;
+use \App\Models\Factura as Factura;
 
 class MesaController implements IApiUsable
 {
@@ -196,4 +198,107 @@ class MesaController implements IApiUsable
 
         return $response->withHeader('Content-Type', 'application/json');
     }
+
+    // public function MasUsada($request, $response, $args)
+    // {
+    //     $lista = Factura::all();
+
+    //     $join = 
+    //     $lista = Mesa::select("codigo", "estado")->join('estados_mesa', 'mesas.id_estado', '=', 'estados_mesa.id')->get();
+    
+    //     $payload = json_encode($lista);
+    
+    //     $response->getBody()->write($payload);
+    
+    //     return $response->withHeader('Content-Type', 'application/json');
+    // }
+
+	// public function MasFacturada($request, $response, $args)
+    // {
+    //         // $lista = Factura::all();
+            
+    //         // $suma = Factura::select("*")->groupby("codigo_mesa")->sum("importe")->get();
+    //         $suma = Factura::select("*")->get("")->groupBy("codigo_mesa");
+    //         // $suma = Factura::select("*")->groupBy("codigo_mesa");
+    //         // $suma = Factura::select("*")->groupBy("codigo_mesa")->get();
+    //         // $suma = Factura::select("*")->get();
+        
+    //         $payload = json_encode($suma);
+        
+    //         $response->getBody()->write($payload);
+        
+    //         return $response->withHeader('Content-Type', 'application/json');
+
+    // }
+
+	public function MasFacturada($request, $response, $args)
+    {
+        $lista = Factura::selectRaw("codigo_mesa, SUM(importe) as suma")->groupBy("codigo_mesa")->get();
+
+        $max = 0;
+
+        foreach ($lista as $mesa)
+        {
+            if ($mesa->suma > $max)
+            {
+                $max = $mesa->suma;
+                $objeto = $mesa;
+            }
+        }
+
+        $payload = json_encode($objeto);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+	public function MenosFacturada($request, $response, $args)
+    {
+        $lista = Factura::selectRaw("codigo_mesa, SUM(importe) as suma")->groupBy("codigo_mesa")->get();
+
+        $min = 999999;
+
+        foreach ($lista as $mesa)
+        {
+            if ($mesa->suma < $min)
+            {
+                $min = $mesa->suma;
+                $objeto = $mesa;
+            }
+        }
+
+        $payload = json_encode($objeto);
+    
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+	public function MayorFactura($request, $response, $args)
+    {
+        $max = Factura::max('importe');
+
+        $lista = Factura::select("codigo_mesa")->where("importe", $max)->get();
+        
+        $payload = json_encode($lista);
+        
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+	public function MenorFactura($request, $response, $args)
+    {
+        $min = Factura::min('importe');
+        
+        $lista = Factura::select("codigo_mesa")->where("importe", $min)->get();
+        
+        $payload = json_encode($lista);
+        
+        $response->getBody()->write($payload);
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+    
 }
